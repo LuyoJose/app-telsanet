@@ -20,7 +20,14 @@ const SidebarButton = ({ icon, label, to }) => {
           transition: 'background 0.2s, color 0.2s'
         }}
       >
-        <span style={{ marginRight: '12px', fontSize: '1.2rem' }}>{icon}</span>
+        <span
+          style={{
+            marginRight: label ? '12px' : '0',
+            fontSize: '1.2rem'
+          }}
+        >
+          {icon}
+        </span>
         {label}
       </div>
     </Link>
