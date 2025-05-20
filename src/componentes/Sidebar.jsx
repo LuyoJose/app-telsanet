@@ -1,5 +1,6 @@
 import React, { useState, useRef } from 'react';
 import SidebarButton from './SidebarButton';
+import { sidebarIcons } from './SidebarIcons';
 
 const Sidebar = () => {
   const [expandido, setExpandido] = useState(true);
@@ -13,7 +14,7 @@ const Sidebar = () => {
   const handleMouseLeave = () => {
     timerRef.current = setTimeout(() => {
       setExpandido(false);
-    }, 5000); // 20 segundos
+    }, 5000); // 5 segundos
   };
 
   // Solo muestra el label si está expandido
@@ -32,7 +33,13 @@ const Sidebar = () => {
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
     >
-      <div>
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: expandido ? 'flex-start' : 'center',
+        }}
+      >
         <div style={{
           padding: expandido ? '32px 16px' : '32px 8px',
           fontWeight: 'bold',
@@ -42,15 +49,21 @@ const Sidebar = () => {
         }}>
           {expandido ? 'teslanet ))' : '))'}
         </div>
-        <SidebarButton icon="📊" label={expandido ? "Dashboard" : ""} to="/dashboard" />
-        <SidebarButton icon="💬" label={expandido ? "Mensajes" : ""} to="/mensajes" />
-        <SidebarButton icon="📄" label={expandido ? "Reportes" : ""} to="/reportes" />
-        <SidebarButton icon="🧑‍💼" label={expandido ? "Roles" : ""} to="/roles" />
-        <SidebarButton icon="👥" label={expandido ? "Usuarios" : ""} to="/usuarios" />
+        <SidebarButton expandido={expandido} icon={<sidebarIcons.dashboard />} label={expandido ? "Dashboard" : ""} to="/dashboard" />
+        <SidebarButton expandido={expandido} icon={<sidebarIcons.mensajes />} label={expandido ? "Mensajes" : ""} to="/mensajes" />
+        <SidebarButton expandido={expandido} icon={<sidebarIcons.reportes />} label={expandido ? "Reportes" : ""} to="/reportes" />
+        <SidebarButton expandido={expandido} icon={<sidebarIcons.roles />} label={expandido ? "Roles" : ""} to="/roles" />
+        <SidebarButton expandido={expandido} icon={<sidebarIcons.usuarios />} label={expandido ? "Usuarios" : ""} to="/usuarios" />
       </div>
-      <div>
-        <SidebarButton icon="⚙️" label={expandido ? "Configuración" : ""} to="/configuracion" />
-        <SidebarButton icon="🚪" label={expandido ? "Cerrar sesión" : ""} to="/logout" />
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: expandido ? 'flex-start' : 'center',
+        }}
+      >
+        <SidebarButton expandido={expandido} icon={<sidebarIcons.configuracion />} label={expandido ? "Configuración" : ""} to="/configuracion" />
+        <SidebarButton expandido={expandido} icon={<sidebarIcons.logout />} label={expandido ? "Cerrar sesión" : ""} to="/logout" />
       </div>
     </div>
   );
