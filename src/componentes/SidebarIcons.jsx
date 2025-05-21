@@ -5,7 +5,8 @@ import {
   User,
   Users,
   Settings,
-  LogOut
+  LogOut,
+  PanelRight
 } from 'lucide-react';
 
 export const sidebarIcons = {
@@ -16,4 +17,5 @@ export const sidebarIcons = {
   usuarios: Users,
   configuracion: Settings,
   logout: LogOut,
+  panel: PanelRight
 };

@@ -13,7 +13,7 @@ const App = () => {
     <Router>
       <div style={{ display: 'flex' }}>
         <Sidebar />
-        <div style={{ flex: 1, padding: '32px' }}>
+        <div style={{ flex: 1 }}>
           <Routes>
             <Route path="/" element={<Navigate to="/dashboard" />} />
             <Route path="/dashboard" element={<Dashboard />} />

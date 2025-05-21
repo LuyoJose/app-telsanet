@@ -1,27 +1,20 @@
-import React, { useState, useRef } from 'react';
+import React, { useState } from 'react';
 import SidebarButton from './SidebarButton';
 import { sidebarIcons } from './SidebarIcons';
+import teslanet from '../assets/teslanet.svg';
+import teslanetLogo from '../assets/teslanetLogo.png';
 
 const Sidebar = () => {
   const [expandido, setExpandido] = useState(true);
-  const timerRef = useRef(null);
 
-  const handleMouseEnter = () => {
-    setExpandido(true);
-    if (timerRef.current) clearTimeout(timerRef.current);
+  const handleToggle = () => {
+    setExpandido((prev) => !prev);
   };
 
-  const handleMouseLeave = () => {
-    timerRef.current = setTimeout(() => {
-      setExpandido(false);
-    }, 5000); // 5 segundos
-  };
-
-  // Solo muestra el label si está expandido
   return (
     <div
       style={{
-        width: expandido ? '220px' : '60px',
+        width: expandido ? '280px' : '60px',
         background: '#183366',
         height: '100vh',
         color: '#fff',
@@ -30,8 +23,6 @@ const Sidebar = () => {
         justifyContent: 'space-between',
         transition: 'width 0.3s'
       }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
     >
       <div
         style={{
@@ -40,15 +31,44 @@ const Sidebar = () => {
           alignItems: expandido ? 'flex-start' : 'center',
         }}
       >
-        <div style={{
-          padding: expandido ? '32px 16px' : '32px 8px',
-          fontWeight: 'bold',
-          fontSize: '1.5rem',
-          color: '#ff4d4f',
-          textAlign: expandido ? 'left' : 'center'
-        }}>
-          {expandido ? 'teslanet ))' : '))'}
+        {/* Encabezado con imagen y botón ocultar solo si expandido */}
+        <div
+          style={{
+            display: 'flex',
+            alignItems: 'center',
+            width: '100%',
+            padding: expandido ? '32px 16px' : '32px 8px',
+            justifyContent: expandido ? 'space-between' : 'center'
+          }}
+        >
+          <img
+            src={expandido ? teslanet : teslanetLogo}
+            alt="Teslanet"
+            style={{
+              width: expandido ? '140px' : '32px',
+              height: 'auto',
+              transition: 'width 0.3s',
+              flex: 1
+            }}
+          />
+          {expandido && (
+            <SidebarButton
+              expandido={expandido}
+              icon={<sidebarIcons.panel />}
+              label={''}
+              onClick={handleToggle}
+            />
+          )}
         </div>
+        {/* Botón panel primero si está colapsado */}
+        {!expandido && (
+          <SidebarButton
+            expandido={expandido}
+            icon={<sidebarIcons.panel />}
+            label={''}
+            onClick={handleToggle}
+          />
+        )}
         <SidebarButton expandido={expandido} icon={<sidebarIcons.dashboard />} label={expandido ? "Dashboard" : ""} to="/dashboard" />
         <SidebarButton expandido={expandido} icon={<sidebarIcons.mensajes />} label={expandido ? "Mensajes" : ""} to="/mensajes" />
         <SidebarButton expandido={expandido} icon={<sidebarIcons.reportes />} label={expandido ? "Reportes" : ""} to="/reportes" />
