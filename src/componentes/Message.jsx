@@ -51,24 +51,46 @@ const Message = () => {
         }}>
           Chats
         </div>
-        <div style={{ padding: '0 16px 12px 16px' }}>
-          <input
-            type="text"
-            placeholder="🔍 Buscar"
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            style={{
-              width: '100%',
-              padding: '8px 16px',
-              borderRadius: 16,
-              border: 'none',
-              outline: 'none',
-              background: '#b3c6e6',
+        {/* Buscador con icono y borde redondeado */}
+        <div style={{
+          padding: '0 16px 18px 16px',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center'
+        }}>
+          <div style={{
+            display: 'flex',
+            alignItems: 'center',
+            width: '100%',
+            background: '#7fa6e6',
+            borderRadius: 24,
+            padding: '0 12px',
+            height: 40,
+            boxSizing: 'border-box'
+          }}>
+            <span style={{
               color: '#fff',
-              fontSize: 16,
-              marginBottom: 0
-            }}
-          />
+              fontSize: 20,
+              marginRight: 8,
+              opacity: 0.8
+            }}>🔍</span>
+            <input
+              type="text"
+              placeholder="Buscar"
+              value={search}
+              onChange={e => setSearch(e.target.value)}
+              style={{
+                flex: 1,
+                border: 'none',
+                outline: 'none',
+                background: 'transparent',
+                color: '#fff',
+                fontSize: 17,
+                padding: '8px 0',
+                borderRadius: 24
+              }}
+            />
+          </div>
         </div>
         <div style={{
           flex: 1,
@@ -118,7 +140,7 @@ const Message = () => {
           borderBottom: '1px solid #ddd',
           display: 'flex',
           alignItems: 'center',
-          padding: 0, // <-- Sin padding lateral
+          padding: '15px 20px',
           fontWeight: 'bold',
           fontSize: 20,
           margin: 0
@@ -128,7 +150,7 @@ const Message = () => {
         {/* Mensajes */}
         <div style={{
           flex: 1,
-          padding: 0, // <-- Sin padding
+          padding: '20px 20px', // Más separación de los bordes
           overflowY: 'auto',
           display: 'flex',
           flexDirection: 'column',
@@ -142,13 +164,25 @@ const Message = () => {
                 alignSelf: msg.from === 'Yo' ? 'flex-end' : 'flex-start',
                 background: msg.from === 'Yo' ? '#e6f7ff' : '#f0f0f0',
                 color: '#222',
-                padding: '8px 16px',
+                padding: '10px 20px',
                 borderRadius: 16,
                 maxWidth: '60%',
-                marginBottom: 4,
-                marginTop: 16
+                marginBottom: 12,
+                marginTop: 8,
               }}
             >
+              {/* Mostrar el nombre solo si no es "Yo" */}
+              {msg.from !== 'Yo' && (
+                <div style={{
+                  fontSize: 12,
+                  fontWeight: 600,
+                  color: '#2952a3',
+                  marginBottom: 2,
+                  marginLeft: 2
+                }}>
+                  {msg.from}
+                </div>
+              )}
               <div style={{ fontSize: 13 }}>{msg.text}</div>
               <div style={{ fontSize: 10, color: '#888', textAlign: 'right' }}>{msg.time}</div>
             </div>
@@ -163,7 +197,7 @@ const Message = () => {
         }} style={{
           display: 'flex',
           borderTop: '1px solid #eee',
-          padding: 0, // <-- Sin padding
+          padding: 0,
           background: '#fafbfc',
           margin: 0,
           width: '100%',
