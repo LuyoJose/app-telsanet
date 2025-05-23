@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import Sidebar from './Sidebar'; // Asegúrate de tener este componente
 
 const users = [
   { id: 1, name: 'Betty Gregory', lastMessage: 'See you soon!', time: '1:25 pm' },
@@ -17,222 +18,149 @@ const Message = () => {
   const [messages, setMessages] = useState(initialMessages);
   const [input, setInput] = useState('');
   const [search, setSearch] = useState('');
+  const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [mainSidebarOpen, setMainSidebarOpen] = useState(false);
+
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 600);
+
+  useEffect(() => {
+    const handleResize = () => setIsMobile(window.innerWidth <= 600);
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, []);
 
   const filteredUsers = users.filter(user =>
     user.name.toLowerCase().includes(search.toLowerCase())
   );
 
   return (
-    <div style={{
-      display: 'flex',
-      height: '100vh',
-      background: '#f5f6fa',
-      margin: 0,
-      padding: 0,
-      boxSizing: 'border-box'
-    }}>
-      {/* Panel de chats */}
-      <div style={{
-        width: 320,
-        background: 'linear-gradient(180deg, #2952a3 0%, #3a5db7 100%)',
-        display: 'flex',
-        flexDirection: 'column',
-        minHeight: '100vh',
-        margin: 0,
-        padding: 0,
-        borderRight: '1px solid #e5e5e5'
-      }}>
-        <div style={{
-          color: '#fff',
-          fontSize: 32,
-          fontWeight: 500,
-          margin: 0,
-          padding: '24px 0 16px 24px'
-        }}>
-          Chats
-        </div>
-        {/* Buscador con icono y borde redondeado */}
-        <div style={{
-          padding: '0 16px 18px 16px',
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'center'
-        }}>
-          <div style={{
-            display: 'flex',
-            alignItems: 'center',
-            width: '100%',
-            background: '#7fa6e6',
-            borderRadius: 24,
-            padding: '0 12px',
-            height: 40,
-            boxSizing: 'border-box'
-          }}>
-            <span style={{
-              color: '#fff',
-              fontSize: 20,
-              marginRight: 8,
-              opacity: 0.8
-            }}>🔍</span>
-            <input
-              type="text"
-              placeholder="Buscar"
-              value={search}
-              onChange={e => setSearch(e.target.value)}
-              style={{
-                flex: 1,
-                border: 'none',
-                outline: 'none',
-                background: 'transparent',
-                color: '#fff',
-                fontSize: 17,
-                padding: '8px 0',
-                borderRadius: 24
-              }}
-            />
+    <div className="app-container">
+      {/* Sidebar principal SOLO en móvil como drawer */}
+      {isMobile && mainSidebarOpen && (
+        <Sidebar
+          open={mainSidebarOpen}
+          onClose={() => setMainSidebarOpen(false)}
+          className={`main-sidebar${mainSidebarOpen ? ' main-sidebar-mobile-open' : ''}`}
+        />
+      )}
+
+      {/* Sidebar de chat SOLO en móvil */}
+      {isMobile && (
+        <div className={`sidebar${sidebarOpen ? ' sidebar-mobile-open' : ''}`}>
+          <button
+            className="sidebar-close-btn"
+            onClick={() => setSidebarOpen(false)}
+          >
+            ✕
+          </button>
+          <div className="sidebar-title">Chats</div>
+          <div className="sidebar-search">
+            <div className="sidebar-search-box">
+              <span className="sidebar-search-icon">🔍</span>
+              <input
+                type="text"
+                placeholder="Buscar"
+                value={search}
+                onChange={e => setSearch(e.target.value)}
+                className="sidebar-search-input"
+              />
+            </div>
+          </div>
+          <div className="sidebar-users">
+            {filteredUsers.map(user => (
+              <div
+                key={user.id}
+                onClick={() => {
+                  setSelectedUser(user);
+                  setSidebarOpen(false);
+                }}
+                className={`sidebar-user${selectedUser.id === user.id ? ' selected' : ''}`}
+              >
+                <span className="sidebar-user-name">{user.name}</span>
+                <span className="sidebar-user-last">{user.lastMessage}</span>
+                <span className="sidebar-user-time">{user.time}</span>
+              </div>
+            ))}
           </div>
         </div>
-        <div style={{
-          flex: 1,
-          overflowY: 'auto',
-          padding: 0,
-          margin: 0
-        }}>
-          {filteredUsers.map(user => (
-            <div
-              key={user.id}
-              onClick={() => setSelectedUser(user)}
-              style={{
-                padding: '16px 32px',
-                background: selectedUser.id === user.id ? '#fff' : 'transparent',
-                color: selectedUser.id === user.id ? '#183366' : '#fff',
-                cursor: 'pointer',
-                borderRadius: 24,
-                margin: '0 16px 8px 16px',
-                fontWeight: selectedUser.id === user.id ? 'bold' : 'normal',
-                display: 'flex',
-                flexDirection: 'column',
-                transition: 'background 0.2s, color 0.2s'
-              }}
-            >
-              <span style={{ fontSize: 17 }}>{user.name}</span>
-              <span style={{ fontSize: 13, opacity: 0.7 }}>{user.lastMessage}</span>
-              <span style={{ fontSize: 11, opacity: 0.5, alignSelf: 'flex-end' }}>{user.time}</span>
-            </div>
-          ))}
-        </div>
-      </div>
+      )}
 
-      {/* Panel de conversación */}
-      <div style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        background: '#fff',
-        minHeight: '100vh',
-        margin: 0,
-        padding: 0
-      }}>
-        {/* Header de conversación */}
-        <div style={{
-          height: 56,
-          background: '#e5e5e5',
-          borderBottom: '1px solid #ddd',
-          display: 'flex',
-          alignItems: 'center',
-          padding: '15px 20px',
-          fontWeight: 'bold',
-          fontSize: 20,
-          margin: 0
-        }}>
+      {/* Chat panel */}
+      <div className="chat-panel">
+        <div className="chat-header">
+          {/* Botón de menú SOLO en móvil */}
+          {isMobile && (
+            mainSidebarOpen ? (
+              <button
+                className="main-sidebar-menu-btn"
+                onClick={() => setMainSidebarOpen(false)}
+              >
+                ←
+              </button>
+            ) : (
+              <button
+                className="main-sidebar-menu-btn"
+                onClick={() => setMainSidebarOpen(true)}
+              >
+                ☰
+              </button>
+            )
+          )}
+          {isMobile && (
+            <button
+              className="sidebar-menu-btn"
+              onClick={() => setSidebarOpen(!sidebarOpen)}
+            >
+              💬
+            </button>
+          )}
           {selectedUser.name}
         </div>
-        {/* Mensajes */}
-        <div style={{
-          flex: 1,
-          padding: '20px 20px', // Más separación de los bordes
-          overflowY: 'auto',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: 10,
-          margin: 0
-        }}>
+        <div className="chat-messages">
           {messages.map((msg, idx) => (
             <div
               key={idx}
-              style={{
-                alignSelf: msg.from === 'Yo' ? 'flex-end' : 'flex-start',
-                background: msg.from === 'Yo' ? '#e6f7ff' : '#f0f0f0',
-                color: '#222',
-                padding: '10px 20px',
-                borderRadius: 16,
-                maxWidth: '60%',
-                marginBottom: 12,
-                marginTop: 8,
-              }}
+              className={`chat-bubble${msg.from === 'Yo' ? ' me' : ''}`}
             >
-              {/* Mostrar el nombre solo si no es "Yo" */}
               {msg.from !== 'Yo' && (
-                <div style={{
-                  fontSize: 12,
-                  fontWeight: 600,
-                  color: '#2952a3',
-                  marginBottom: 2,
-                  marginLeft: 2
-                }}>
-                  {msg.from}
-                </div>
+                <div className="chat-bubble-from">{msg.from}</div>
               )}
-              <div style={{ fontSize: 13 }}>{msg.text}</div>
-              <div style={{ fontSize: 10, color: '#888', textAlign: 'right' }}>{msg.time}</div>
+              <div className="chat-bubble-text">{msg.text}</div>
+              <div className="chat-bubble-time">{msg.time}</div>
             </div>
           ))}
         </div>
-        {/* Input de mensaje */}
-        <form onSubmit={e => {
-          e.preventDefault();
-          if (input.trim() === '') return;
-          setMessages([...messages, { from: 'Yo', text: input, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
-          setInput('');
-        }} style={{
-          display: 'flex',
-          borderTop: '1px solid #eee',
-          padding: 0,
-          background: '#fafbfc',
-          margin: 0,
-          width: '100%',
-          minHeight: 56,
-          alignItems: 'center'
-        }}>
+        <form
+          className="msg-input-form"
+          onSubmit={e => {
+            e.preventDefault();
+            if (input.trim() === '') return;
+            setMessages([...messages, { from: 'Yo', text: input, time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) }]);
+            setInput('');
+          }}
+        >
           <input
             type="text"
             value={input}
             onChange={e => setInput(e.target.value)}
             placeholder="Escribe un mensaje..."
-            style={{
-              flex: 1,
-              border: 'none',
-              outline: 'none',
-              padding: 16,
-              borderRadius: 20,
-              background: '#f0f2f5',
-              marginRight: 8,
-              fontSize: 15
-            }}
+            className="msg-input"
           />
-          <button type="submit" style={{
-            background: '#183366',
-            color: '#fff',
-            border: 'none',
-            borderRadius: 20,
-            padding: '8px 24px',
-            cursor: 'pointer',
-            fontSize: 15
-          }}>
+          <button type="submit" className="msg-btn">
             Enviar
           </button>
         </form>
       </div>
+
+      {/* Barra inferior solo en móvil */}
+      {isMobile && (
+        <div className="bottom-bar">
+          <button onClick={() => setSidebarOpen(true)}>
+            <span role="img" aria-label="chats">💬</span>
+          </button>
+          {/* Puedes agregar más iconos aquí */}
+        </div>
+      )}
     </div>
   );
 };

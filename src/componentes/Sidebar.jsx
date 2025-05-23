@@ -15,7 +15,7 @@ const navButtons = [
   { icon: <sidebarIcons.logout />, label: "Cerrar sesión", to: "/logout" }
 ];
 
-const Sidebar = () => {
+const Sidebar = ({ className = "" }) => {
   const [expandido, setExpandido] = useState(true);
   const location = useLocation();
 
@@ -30,26 +30,26 @@ const Sidebar = () => {
 
   // Recalcula el highlight cuando cambia el tamaño de la ventana o el botón activo
   useEffect(() => {
-  function updateHighlight() {
-    if (activeIndex >= 0 && buttonRefs.current[activeIndex]) {
-      const el = buttonRefs.current[activeIndex];
-      const style = {
-        top: el.offsetTop,
-        left: el.offsetLeft,
-        width: el.offsetWidth,
-        height: el.offsetHeight
-      };
-      setHighlightStyle(style);
+    function updateHighlight() {
+      if (activeIndex >= 0 && buttonRefs.current[activeIndex]) {
+        const el = buttonRefs.current[activeIndex];
+        const style = {
+          top: el.offsetTop,
+          left: el.offsetLeft,
+          width: el.offsetWidth,
+          height: el.offsetHeight
+        };
+        setHighlightStyle(style);
+      }
     }
-  }
-  // Espera al siguiente frame para asegurar que el DOM ya se actualizó
-  const raf = requestAnimationFrame(updateHighlight);
-  window.addEventListener('resize', updateHighlight);
-  return () => {
-    cancelAnimationFrame(raf);
-    window.removeEventListener('resize', updateHighlight);
-  };
-}, [activeIndex, expandido]);
+    // Espera al siguiente frame para asegurar que el DOM ya se actualizó
+    const raf = requestAnimationFrame(updateHighlight);
+    window.addEventListener('resize', updateHighlight);
+    return () => {
+      cancelAnimationFrame(raf);
+      window.removeEventListener('resize', updateHighlight);
+    };
+  }, [activeIndex, expandido]);
 
   const handleToggle = () => {
     setExpandido(prev => !prev);
@@ -57,18 +57,23 @@ const Sidebar = () => {
 
   return (
     <div
-      style={{
-        width: expandido ? '280px' : '60px',
-        background: '#183366',
-        height: '100vh',
-        color: '#fff',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'space-between',
-        transition: 'width 0.3s',
-        position: 'relative',
-        overflow: 'hidden'
-      }}
+      className={className}
+      style={
+        className
+          ? undefined // Si viene className, deja que el CSS lo controle (drawer en móvil)
+          : {
+              width: expandido ? '280px' : '60px',
+              background: '#183366',
+              height: '100vh',
+              color: '#fff',
+              display: 'flex',
+              flexDirection: 'column',
+              justifyContent: 'space-between',
+              transition: 'width 0.3s',
+              position: 'relative',
+              overflow: 'hidden'
+            }
+      }
     >
       <div
         style={{
