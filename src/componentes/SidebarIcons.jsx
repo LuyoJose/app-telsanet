@@ -6,7 +6,12 @@ import {
   Users,
   Settings,
   LogOut,
-  PanelRight
+  PanelRight,
+  SendHorizontal,
+  AlignJustify,
+  Search,
+  Paperclip,
+  Smile
 } from 'lucide-react';
 
 export const sidebarIcons = {
@@ -17,5 +22,10 @@ export const sidebarIcons = {
   usuarios: Users,
   configuracion: Settings,
   logout: LogOut,
-  panel: PanelRight
+  panel: PanelRight,
+  enviar: SendHorizontal,
+  menu: AlignJustify,
+  buscar: Search,
+  clip: Paperclip,
+  emoji: Smile
 };
