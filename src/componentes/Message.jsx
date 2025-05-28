@@ -46,7 +46,7 @@ const Message = () => {
   const [drawingMode, setDrawingMode] = useState(false);
   const [tool, setTool] = useState('highlight');
   const [replyTo, setReplyTo] = useState(null);
-  const [hoveredMsg, setHoveredMsg] = useState(null);
+  const [replyLeaving, setReplyLeaving] = useState(false);
   const touchStartX = useRef(0);
 
   useEffect(() => {
@@ -162,7 +162,16 @@ const Message = () => {
     setSelectedFile(null);
     setImagePreview(null);
     setDrawingMode(false);
+    setReplyTo(null);
     if (fileInputRef.current) fileInputRef.current.value = '';
+  };
+
+  const handleCancelReply = () => {
+    setReplyLeaving(true);
+    setTimeout(() => {
+      setReplyTo(null);
+      setReplyLeaving(false);
+    }, 350); // Debe coincidir con la duración de la animación
   };
 
   useEffect(() => {
@@ -297,54 +306,58 @@ const Message = () => {
 
           {selectedUser.name}
         </div>
+
         <div className="chat-messages">
           {messages.map((msg, idx) => (
-            <div
-              key={idx}
-              className={`chat-bubble${msg.from === 'Yo' ? ' me' : ''}`}
-              onMouseEnter={() => setHoveredMsg(idx)}
-              onMouseLeave={() => setHoveredMsg(null)}
-              onTouchStart={isMobile ? handleTouchStart : undefined}
-              onTouchEnd={isMobile ? (e) => handleTouchEnd(msg, e) : undefined}
-            >
-              {msg.replyTo && (
-                <div className="reply-to">
-                  <span className="reply-from">{msg.replyTo.from}:</span>
-                  <span className="reply-text">{msg.replyTo.text}</span>
-                </div>
-              )}
-              <div className="chat-bubble-text">{msg.text}</div>
-              <div className="chat-bubble-time">{msg.time}</div>
-              {msg.from !== 'Yo' && hoveredMsg === idx && !isMobile && (
-                <button
-                  className="reply-btn"
-                  onClick={() => setReplyTo(msg)}
-                  title="Responder"
-                >↩️</button>
-              )}
-              
-              {/* Muestra la imagen si existe */}
-              {msg.imagePreview && (
-                <div style={{ marginTop: 8 }}>
-                  <img
-                    src={msg.imagePreview}
-                    alt="preview"
-                    style={{ maxWidth: 150, borderRadius: 8, cursor: 'pointer' }}
-                    onClick={() => setFullscreenImage(msg.imagePreview)}
-                  />
-                </div>
-              )}
-              {/* Muestra el nombre del archivo si existe y no es imagen */}
-              {msg.file && !msg.imagePreview && (
-                <div style={{ marginTop: 8, fontSize: 12, color: '#555', display: 'flex', alignItems: 'center', gap: 6 }}>
-                  {getFileIcon(msg.file)}
-                  <span>Archivo: {msg.file.name}</span>
-                </div>
-              )}
+            <div className={`bubble-hover-area${msg.from === 'Yo' ? ' me' : ''}`} key={idx}>
+              <div
+                className={`chat-bubble${msg.from === 'Yo' ? ' me' : ''}`}
+
+                onTouchStart={isMobile ? handleTouchStart : undefined}
+                onTouchEnd={isMobile ? (e) => handleTouchEnd(msg, e) : undefined}
+              >
+                {msg.replyTo && (
+                  <div className="reply-to">
+                    <span className="reply-from">{msg.replyTo.from}:</span>
+                    <span className="reply-text">{msg.replyTo.text}</span>
+                  </div>
+                )}
+                <div className="chat-bubble-text">{msg.text}</div>
+                <div className="chat-bubble-time">{msg.time}</div>
+                {msg.from !== 'Yo' && (
+                  <button
+                    className="reply-btn"
+                    onClick={() => {
+                      setReplyTo(msg);
+                      setTimeout(() => textareaRef.current && textareaRef.current.focus(), 0);
+                    }}
+                    title="Responder"
+                    tabIndex={-1}
+                  ><sidebarIcons.responder /></button>
+                )}
+                {/* ...imagen y archivo si existen... */}
+                {msg.imagePreview && (
+                  <div style={{ marginTop: 8 }}>
+                    <img
+                      src={msg.imagePreview}
+                      alt="preview"
+                      style={{ maxWidth: 150, borderRadius: 8, cursor: 'pointer' }}
+                      onClick={() => setFullscreenImage(msg.imagePreview)}
+                    />
+                  </div>
+                )}
+                {msg.file && !msg.imagePreview && (
+                  <div style={{ marginTop: 8, fontSize: 12, color: '#555', display: 'flex', alignItems: 'center', gap: 6 }}>
+                    {getFileIcon(msg.file)}
+                    <span>Archivo: {msg.file.name}</span>
+                  </div>
+                )}
+              </div>
             </div>
           ))}
           <div ref={messagesEndRef} />
         </div>
+
 
         {selectedFile && imagePreview && (
           <div
@@ -471,12 +484,19 @@ const Message = () => {
             </div>
           </div>
         )}
+        {replyTo && (
+          <div className={`reply-preview reply-preview-animate${replyLeaving ? ' reply-preview-leave' : ''}`}>
+            <span className="reply-from">{replyTo.from}:</span>
+            <span className="reply-text">{replyTo.text}</span>
+            <button className="reply-cancel" onClick={handleCancelReply}>✕</button>
+          </div>
+        )}
         <form
           className="msg-input-form"
           onSubmit={handleSend}
         >
           {/* Previsualización antes de enviar, ahora arriba del input y con botón de eliminar */}
-          <div className="msg-input-box">
+          <div className="msg-input-box" style={{ width: '100%' }}>
             <button
               type="button"
               className="msg-input-icon emoji"
@@ -498,13 +518,7 @@ const Message = () => {
                 <EmojiPicker onEmojiClick={handleEmojiSelect} />
               </div>
             )}
-            {replyTo && (
-              <div className="reply-preview">
-                <span className="reply-from">{replyTo.from}:</span>
-                <span className="reply-text">{replyTo.text}</span>
-                <button className="reply-cancel" onClick={() => setReplyTo(null)}>✕</button>
-              </div>
-            )}
+
             <textarea
               ref={textareaRef}
               value={input}

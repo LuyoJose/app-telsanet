@@ -11,7 +11,8 @@ import {
   AlignJustify,
   Search,
   Paperclip,
-  Smile
+  Smile,
+  CornerDownRight
 } from 'lucide-react';
 
 export const sidebarIcons = {
@@ -27,5 +28,6 @@ export const sidebarIcons = {
   menu: AlignJustify,
   buscar: Search,
   clip: Paperclip,
-  emoji: Smile
+  emoji: Smile,
+  responder: CornerDownRight
 };

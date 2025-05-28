@@ -1,19 +1,38 @@
-import { useEffect } from 'react';
+import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const Logout = () => {
+const Logout = ({ onLogout }) => {
   const navigate = useNavigate();
+  const [showConfirm, setShowConfirm] = useState(true);
 
-  useEffect(() => {
-    // Elimina el token o la información de sesión
+  const handleLogout = () => {
     localStorage.removeItem('token');
-    // Aquí puedes limpiar más datos si es necesario
-
-    // Redirige al login
+    if (onLogout) onLogout(); // Cambia el estado en App.jsx
     navigate('/login');
-  }, [navigate]);
+  };
 
-  return <div>Cerrando sesión...</div>;
+  const handleCancel = () => {
+    setShowConfirm(false);
+    navigate(-1);
+  };
+
+  if (!showConfirm) return null;
+
+  return (
+    <div className="logout-confirm-overlay" >
+      <div className="logout-confirm-box">
+        <h2>¿Seguro que quieres salir?</h2>
+        <div className="logout-confirm-actions">
+          <button className="logout-btn" onClick={handleLogout}>
+            Salir
+          </button>
+          <button className="cancel-btn" onClick={handleCancel}>
+            Cancelar
+          </button>
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default Logout;

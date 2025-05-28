@@ -3,7 +3,8 @@
   box-sizing: border-box;
 }
 
-body, html {
+body,
+html {
   height: 100vh;
   overflow: hidden;
 }
@@ -16,6 +17,7 @@ body {
   padding: 0;
   background: #f5f6fa;
 }
+
 .msg-input,
 .msg-input::placeholder {
   color: #222;
@@ -23,6 +25,7 @@ body {
   font-size: 17px;
   font-family: 'Segoe UI', Arial, Helvetica, sans-serif;
 }
+
 .msg-input-form {
   display: flex;
   align-items: center;
@@ -30,6 +33,7 @@ body {
   background: #fafbfc;
   padding: 0 8px;
   gap: 8px;
+  width: 100%;
 }
 
 .file-preview {
@@ -38,7 +42,8 @@ body {
   justify-content: center;
   margin-bottom: 12px;
 }
-.file-preview > div {
+
+.file-preview>div {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -49,22 +54,18 @@ body {
   max-width: 320px;
   min-width: 200px;
 }
+
 .msg-input-box {
   display: flex;
-  flex-direction: column; /* <-- Asegura que los hijos se apilen verticalmente */
+  flex-direction: column;
+  flex: 1;
   position: relative;
-  gap: 0; /* Espacio entre reply-preview y textarea */
+  align-items: stretch;
+  /* Cambia a stretch para que los hijos ocupen todo el ancho */
+  width: 100%;
+  gap: 0;
 }
 
-.msg-input {
-  font-size: 20px !important;
-  padding: 12px 48px 12px 48px !important; /* más espacio interno */
-  border-radius: 20px;
-  background: #f0f2f5;
-  margin-right: 8px;
-  height: 48px; /* ajusta el alto aquí */
-  box-sizing: border-box;
-}
 
 .msg-input-icon {
   position: absolute;
@@ -92,6 +93,182 @@ body {
 .msg-input-icon.clip {
   right: 16px;
 }
+
+/*Login*/
+.login-container {
+  display: flex;
+  min-height: 100vh;
+  width: 100vw;
+  position: relative;
+  z-index: 1;
+  background: transparent;
+}
+
+.login-left {
+  background: #19316E;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  padding: 48px 32px;
+  min-width: 400px;
+  max-width: 480px;
+  z-index: 2;
+  box-shadow: 0 4px 32px rgba(0,0,0,0.18);
+  position: relative;
+}
+
+.login-logo {
+  margin-bottom: 50px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.login-logo img {
+  width: 300px;
+  /* Ajusta este valor según el tamaño que desees */
+  max-width: 100%;
+  height: auto;
+}
+
+.login-title {
+  font-size: 2rem;
+  color: #ffffff;
+  margin-bottom: 8px;
+  font-weight: bold;
+}
+
+.login-subtitle {
+  color: #ffffff;
+  margin-bottom: 24px;
+}
+
+.login-form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.login-input {
+  padding: 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 1rem;
+}
+
+.login-options {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 0.95rem;
+  color: #ffffff;
+}
+
+.login-link-forgot {
+  color: #c0392b;
+  text-decoration: none;
+  margin-left: 8px;
+}
+
+.login-btn {
+  background: #c0392b;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 1.1rem;
+  font-weight: bold;
+  cursor: pointer;
+  margin-top: 8px;
+}
+
+.login-register {
+  margin-top: 24px;
+  color: #ffffff;
+}
+
+.login-link-register {
+  color: #c0392b;
+  cursor: pointer;
+  margin-left: 4px;
+}
+
+.login-right {
+  flex: 2;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: stretch;
+}
+
+.login-bg-img,
+.login-bg-overlay {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  z-index: 0;
+  display: block;
+  pointer-events: none;
+}
+
+.login-bg-overlay {
+  background: rgba(0,0,0,0.45);
+}
+/* logout */
+.logout-confirm-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+}
+
+.logout-confirm-box {
+  background: #fff;
+  padding: 32px 24px;
+  border-radius: 10px;
+  box-shadow: 0 2px 16px rgba(0, 0, 0, 0.15);
+  text-align: center;
+  min-width: 300px;
+}
+
+.logout-confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 20px;
+}
+
+.logout-btn {
+  background: #c0392b;
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 24px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.cancel-btn {
+  background: #eee;
+  color: #333;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 24px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
 /* Layout principal */
 .app-container {
   display: flex;
@@ -231,15 +408,71 @@ body {
 }
 
 .chat-bubble {
+  display: inline-block;
+  /* Solo ocupa el ancho del texto */
   align-self: flex-start;
   background: #f0f0f0;
   color: #222;
   padding: 10px 20px;
   border-radius: 16px;
   max-width: 60%;
+  /* Limita el ancho máximo */
+  min-width: 48px;
+  /* Opcional: mínimo para burbujas cortas */
   margin-bottom: 12px;
   margin-top: 8px;
   margin-left: 16px;
+  position: relative;
+  word-break: break-word;
+  /* Rompe palabras largas */
+  white-space: pre-line;
+  /* Respeta saltos de línea */
+  box-sizing: border-box;
+}
+
+.chat-bubble:hover .reply-btn {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.bubble-hover-area {
+  position: relative;
+  display: flex;
+  width: 100%;
+  padding: 0;
+  justify-content: flex-start;
+  /* Ajusta el alto del área de hover si lo deseas */
+}
+
+.bubble-hover-area.me {
+  justify-content: flex-end;
+}
+
+.reply-btn {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s;
+  position: absolute;
+  right: -38px;
+  top: 50%;
+  color: #aaaaaa;
+  transform: translateY(-50%);
+  background: transparent;
+  border: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 5px;
+  padding: 4px 6px;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bubble-hover-area:hover .reply-btn,
+.bubble-hover-area:focus-within .reply-btn {
+  opacity: 1;
+  pointer-events: auto;
 }
 
 .chat-bubble.me {
@@ -247,7 +480,14 @@ body {
   background: #e6f7ff;
   margin-right: 16px;
   margin-left: 0;
+  display: inline-block;
+  max-width: 60%;
 }
+
+.chat-bubble.me .reply-btn {
+  display: none !important;
+}
+
 
 .chat-bubble-from {
   font-size: 12px;
@@ -282,6 +522,7 @@ body {
 .sidebar-close-btn {
   display: none;
 }
+
 .msg-btn {
   display: flex;
   align-items: center;
@@ -293,32 +534,41 @@ body {
   border: none;
   cursor: pointer;
   font-size: 15px;
-  min-width: 80px; /* Ajusta según tu preferencia */
+  min-width: 80px;
+  /* Ajusta según tu preferencia */
   height: 40px;
   transition: background 0.2s;
 }
+
 .msg-btn-icon {
   margin: 0 8px 0 0;
   font-size: 20px;
   display: none;
 }
+
 .msg-btn-text {
   display: inline;
 }
+
 .msg-input {
   flex: 1;
   border: none;
   outline: none;
-  padding: 16px;
+  font-size: 18px;
+  padding: 12px 48px 12px 48px;
+  /* Deja espacio para los íconos */
   border-radius: 20px;
   background: #f0f2f5;
-  margin-right: 8px;
-  font-size: 15px;
-  resize: none;           /* No permite redimensionar manualmente */
-  min-height: 40px;       /* 1 línea aprox */
-  max-height: 72px;       /* 3 líneas aprox (ajusta según font-size y padding) */
-  overflow-y: auto;       /* Muestra scroll si hay más de 3 líneas */
+  min-height: 48px;
+  max-height: 120px;
+  box-sizing: border-box;
+  resize: none;
+  overflow-y: auto;
   line-height: 1.2;
+  width: 100%;
+  /* Asegura que ocupe todo el ancho del contenedor */
+  margin: 0;
+  /* Elimina márgenes laterales */
 }
 
 .msg-btn {
@@ -336,7 +586,7 @@ body {
   position: fixed;
   inset: 0;
   z-index: 9999;
-  background: rgba(0,0,0,0.85);
+  background: rgba(0, 0, 0, 0.85);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -371,15 +621,23 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to   { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
+
 .reply-preview {
+  position: static;
+  /* Quita absolute */
   background: #f1f1f1;
   border-left: 4px solid #1976d2;
-  padding: 0;
-  margin-bottom: 12px;      /* Más separación con el textarea */
-  margin-top: 4px;
+  padding: 6px 12px;
+  margin: 0 0 8px 0;
+  /* Espacio abajo */
   display: flex;
   align-items: center;
   gap: 12px;
@@ -387,8 +645,10 @@ body {
   min-height: 32px;
   border-radius: 10px 10px 10px 4px;
   box-shadow: 0 1px 4px #0001;
-  max-width: 90%;
+  max-width: 100%;
+  z-index: 1;
 }
+
 .reply-cancel {
   background: none;
   border: none;
@@ -396,18 +656,7 @@ body {
   font-size: 18px;
   cursor: pointer;
 }
-.reply-btn {
-  position: absolute;
-  right: -32px;
-  top: 8px;
-  background: #fff;
-  border: 1px solid #ccc;
-  border-radius: 50%;
-  cursor: pointer;
-  font-size: 16px;
-  padding: 4px 6px;
-  z-index: 2;
-}
+
 .reply-to {
   background: #e5e5e5;
   border-left: 3px solid #1976d2;
@@ -416,6 +665,96 @@ body {
   font-size: 13px;
   color: #555;
 }
+
+.reply-preview {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 0.3s, transform 0.3s;
+}
+
+.reply-preview-animate {
+  animation: slideUpReply 0.35s cubic-bezier(.4, 1.6, .6, 1) both;
+}
+
+.reply-preview-leave {
+  animation: slideDownReply 0.35s cubic-bezier(.4, 1.6, .6, 1) both;
+}
+
+@keyframes slideDownReply {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  to {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+}
+
+@keyframes slideUpReply {
+  from {
+    opacity: 0;
+    transform: translateY(40px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+/* Fuera del media query: estilos base para la barra */
+.bottom-navbar {
+  display: flex;
+  flex-direction: row;
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  background: #19316E;
+  padding: 0 4px;
+  height: 56px;
+  align-items: center;
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 100;
+  scrollbar-width: thin;
+  scrollbar-color: #2952a3 #19316E;
+}
+
+.bottom-navbar::-webkit-scrollbar {
+  height: 6px;
+}
+.bottom-navbar::-webkit-scrollbar-thumb {
+  background: #2952a3;
+  border-radius: 3px;
+}
+
+.nav-icon {
+  flex: 0 0 auto;
+  width: 48px;
+  height: 48px;
+  margin: 0 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 26px;
+  cursor: pointer;
+  border-radius: 50%;
+  background: none;
+  border: none;
+  transition: background 0.2s;
+}
+
+.nav-icon:active,
+.nav-icon:focus,
+.nav-icon:hover {
+  background: #2952a3;
+}
+
+
 /* Responsive: pantallas medianas */
 @media (max-width: 900px) {
   .sidebar {
@@ -447,13 +786,13 @@ body {
     display: flex;
     flex-direction: column;
     transform: translateX(-100%);
-    transition: transform 0.3s cubic-bezier(.4,0,.2,1);
+    transition: transform 0.3s cubic-bezier(.4, 0, .2, 1);
     border-right: none;
     border-bottom: 1px solid #e5e5e5;
     padding-bottom: 0;
     min-width: 0;
   }
-  
+
 
   .sidebar.sidebar-mobile-open {
     transform: translateX(0);
@@ -462,6 +801,7 @@ body {
   .sidebar-close-btn {
     display: none;
   }
+
   .sidebar.sidebar-mobile-open .sidebar-close-btn {
     display: block;
     background: none;
@@ -504,6 +844,7 @@ body {
     font-size: 26px !important;
     min-width: 0;
   }
+
   .msg-btn-icon {
     display: inline;
     margin: 0;
@@ -512,6 +853,7 @@ body {
     line-height: 1;
     margin-top: 3px;
   }
+
   .msg-btn-text {
     display: none;
   }
@@ -565,102 +907,138 @@ body {
     word-break: break-word;
     white-space: pre-line;
   }
+
+  /* Contenedor principal: centra el cuadro */
+.login-container {
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100vw;
+    padding: 0;
+    display: flex;
+  }
+
+  /* El cuadro azul */
+.login-left {
+    width: 100%;
+    max-width: 370px;    /* <-- Fija el ancho máximo del cuadro */
+    min-width: 0;
+    border-radius: 22px;
+    box-shadow: 0 4px 32px rgba(0,0,0,0.18);
+    padding: 28px 6vw;
+    margin: 0 auto;
+    background: #19316E;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+  } 
+
+  .login-right {
+    display: none !important;
+  }
+   .login-logo {
+    margin-bottom: 0;
+    margin-top: 20px; /* Espacio arriba del logo */
+  }
+
+  
 }
 
-  /* Sidebar principal como drawer en móvil */
-  @media (max-width: 600px) {
-    .main-sidebar {
-      display: flex;
-      position: fixed;
-      left: 0;
-      top: 0;
-      bottom: 0;
-      width: 80vw;
-      max-width: 320px;
-      z-index: 200;
-      background: #183366;
-      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
-      flex-direction: column;
-      transition: transform 0.3s;
-      transform: translateX(-100%);
-      /* Oculto por defecto */
-    }
 
-    .main-sidebar.main-sidebar-mobile-open {
-      transform: translateX(0);
-    }
-
-    .main-sidebar-close-btn {
-      display: block;
-      background: none;
-      border: none;
-      color: #fff;
-      font-size: 2rem;
-      align-self: flex-end;
-      margin: 16px;
-      cursor: pointer;
-    }
-
-    .main-sidebar-menu-btn {
-      display: block;
-      background: none;
-      border: none;
-      font-size: 2rem;
-      margin-right: 12px;
-      cursor: pointer;
-      color: #183366;
-    }
+/* Sidebar principal como drawer en móvil */
+@media (max-width: 600px) {
+  .main-sidebar {
+    display: flex;
+    position: fixed;
+    left: 0;
+    top: 0;
+    bottom: 0;
+    width: 80vw;
+    max-width: 320px;
+    z-index: 200;
+    background: #183366;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+    flex-direction: column;
+    transition: transform 0.3s;
+    transform: translateX(-100%);
+    /* Oculto por defecto */
   }
 
-  /* En desktop, sidebar principal siempre visible y fijo */
-  @media (max-width: 600px) {
-    .main-sidebar {
-      display: flex;
-      position: fixed;
-      left: 0;
-      /* LADO IZQUIERDO */
-      top: 0;
-      bottom: 0;
-      width: 80vw;
-      max-width: 320px;
-      z-index: 200;
-      background: #183366;
-      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
-      flex-direction: column;
-      transition: transform 0.3s;
-      transform: translateX(-100%);
-      /* Oculto a la izquierda */
-    }
-
-    .main-sidebar.main-sidebar-mobile-open {
-      transform: translateX(0);
-    }
+  .main-sidebar.main-sidebar-mobile-open {
+    transform: translateX(0);
   }
 
-  @media (max-width: 600px) {
-    .chat-panel {
-      padding-bottom: 56px;
-    }
-
-    .chat-panel {
-      position: relative;
-      width: 100%;
-      height: 100vh;
-      /* o 100% si tu contenedor ya tiene altura */
-      overflow-x: hidden;
-      /* evita scroll horizontal */
-      display: flex;
-      flex-direction: column;
-    }
-
-    .chat-messages {
-      flex: 1 1 auto;
-      overflow-y: auto;
-      /* solo scroll vertical */
-      overflow-x: hidden;
-      /* nunca scroll horizontal */
-      padding: 16px;
-      min-height: 0;
-      /* importante para flexbox */
-    }
+  .main-sidebar-close-btn {
+    display: block;
+    background: none;
+    border: none;
+    color: #fff;
+    font-size: 2rem;
+    align-self: flex-end;
+    margin: 16px;
+    cursor: pointer;
   }
+
+  .main-sidebar-menu-btn {
+    display: block;
+    background: none;
+    border: none;
+    font-size: 2rem;
+    margin-right: 12px;
+    cursor: pointer;
+    color: #183366;
+  }
+}
+
+/* En desktop, sidebar principal siempre visible y fijo */
+@media (max-width: 600px) {
+  .main-sidebar {
+    display: flex;
+    position: fixed;
+    left: 0;
+    /* LADO IZQUIERDO */
+    top: 0;
+    bottom: 0;
+    width: 80vw;
+    max-width: 320px;
+    z-index: 200;
+    background: #183366;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.2);
+    flex-direction: column;
+    transition: transform 0.3s;
+    transform: translateX(-100%);
+    /* Oculto a la izquierda */
+  }
+
+  .main-sidebar.main-sidebar-mobile-open {
+    transform: translateX(0);
+  }
+}
+
+@media (max-width: 600px) {
+  .chat-panel {
+    padding-bottom: 56px;
+  }
+
+  .chat-panel {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    /* o 100% si tu contenedor ya tiene altura */
+    overflow-x: hidden;
+    /* evita scroll horizontal */
+    display: flex;
+    flex-direction: column;
+  }
+
+  .chat-messages {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    /* solo scroll vertical */
+    overflow-x: hidden;
+    /* nunca scroll horizontal */
+    padding: 16px;
+    min-height: 0;
+    /* importante para flexbox */
+  }
+}

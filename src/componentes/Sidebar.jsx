@@ -1,5 +1,5 @@
 import React, { useState, useMemo, useRef, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
 import SidebarButton from './SidebarButton';
 import { sidebarIcons } from './SidebarIcons';
 import teslanet from '../assets/teslanet.svg';
@@ -18,6 +18,8 @@ const navButtons = [
 const Sidebar = ({ className = "" }) => {
   const [expandido, setExpandido] = useState(true);
   const location = useLocation();
+  const navigate = useNavigate();
+  console.log('Sidebar location:', location);
 
   const activeIndex = useMemo(
     () => navButtons.findIndex(btn => btn.to === location.pathname),
@@ -42,7 +44,6 @@ const Sidebar = ({ className = "" }) => {
         setHighlightStyle(style);
       }
     }
-    // Espera al siguiente frame para asegurar que el DOM ya se actualizó
     const raf = requestAnimationFrame(updateHighlight);
     window.addEventListener('resize', updateHighlight);
     return () => {
@@ -55,12 +56,21 @@ const Sidebar = ({ className = "" }) => {
     setExpandido(prev => !prev);
   };
 
+  // Manejo especial para el botón de logout
+  const handleNavClick = (to) => {
+    if (to === '/logout') {
+      navigate('/logout', { state: { backgroundLocation: location } });
+    } else {
+      navigate(to);
+    }
+  };
+
   return (
     <div
       className={className}
       style={
         className
-          ? undefined // Si viene className, deja que el CSS lo controle (drawer en móvil)
+          ? undefined
           : {
               width: expandido ? '280px' : '60px',
               background: '#183366',
@@ -148,6 +158,7 @@ const Sidebar = ({ className = "" }) => {
             to={btn.to}
             isActive={activeIndex === idx}
             ref={el => buttonRefs.current[idx] = el}
+            onClick={() => handleNavClick(btn.to)}
           />
         ))}
         {/* Botones de navegación inferiores */}
@@ -160,6 +171,7 @@ const Sidebar = ({ className = "" }) => {
             to={btn.to}
             isActive={activeIndex === idx + 5}
             ref={el => buttonRefs.current[idx + 5] = el}
+            onClick={() => handleNavClick(btn.to)}
           />
         ))}
       </div>
