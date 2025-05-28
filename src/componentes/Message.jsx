@@ -42,6 +42,12 @@ const Message = () => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [imagePreview, setImagePreview] = useState(null);
   const fileInputRef = useRef(null);
+  const [fullscreenImage, setFullscreenImage] = useState(null);
+  const [drawingMode, setDrawingMode] = useState(false);
+  const [tool, setTool] = useState('highlight');
+  const [replyTo, setReplyTo] = useState(null);
+  const [hoveredMsg, setHoveredMsg] = useState(null);
+  const touchStartX = useRef(0);
 
   useEffect(() => {
     const textarea = textareaRef.current;
@@ -109,6 +115,38 @@ const Message = () => {
   const handleSend = (e) => {
     e.preventDefault();
     if (input.trim() === '' && !selectedFile) return;
+
+    let finalImage = imagePreview;
+    if (drawingMode) {
+      const img = new window.Image();
+      img.src = imagePreview;
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        canvas.width = img.width;
+        canvas.height = img.height;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, img.width, img.height);
+        const drawCanvas = document.getElementById('draw-canvas');
+        if (drawCanvas) ctx.drawImage(drawCanvas, 0, 0, img.width, img.height);
+        finalImage = canvas.toDataURL();
+        sendMessage(finalImage);
+        setTimeout(() => textareaRef.current && textareaRef.current.focus(), 0);
+      };
+      return;
+    }
+    sendMessage(finalImage);
+  };
+
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+  const handleTouchEnd = (msg, e) => {
+    const deltaX = e.changedTouches[0].clientX - touchStartX.current;
+    if (deltaX > 60) { // Ajusta el umbral si quieres
+      setReplyTo(msg);
+    }
+  };
+  const sendMessage = (finalImage) => {
     setMessages([
       ...messages,
       {
@@ -116,15 +154,75 @@ const Message = () => {
         text: input,
         time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
         file: selectedFile,
-        imagePreview: imagePreview
+        imagePreview: finalImage,
+        replyTo: replyTo,
       }
     ]);
     setInput('');
     setSelectedFile(null);
     setImagePreview(null);
+    setDrawingMode(false);
     if (fileInputRef.current) fileInputRef.current.value = '';
   };
 
+  useEffect(() => {
+    if (!drawingMode) return;
+    const canvas = document.getElementById('draw-canvas');
+    if (!canvas) return;
+    const ctx = canvas.getContext('2d');
+    let drawing = false;
+
+    const getStroke = () => {
+      if (tool === 'highlight') {
+        ctx.globalAlpha = 0.18; // Más transparente
+        ctx.strokeStyle = '#ffeb3b';
+        ctx.lineWidth = 16;
+        ctx.globalCompositeOperation = 'source-over';
+      } else if (tool === 'pen') {
+        ctx.globalAlpha = 1;
+        ctx.strokeStyle = '#1976d2';
+        ctx.lineWidth = 3;
+        ctx.globalCompositeOperation = 'source-over';
+      } else if (tool === 'eraser') {
+        ctx.globalAlpha = 1;
+        ctx.strokeStyle = 'rgba(0,0,0,1)';
+        ctx.lineWidth = 18;
+        ctx.globalCompositeOperation = 'destination-out'; // Borra solo lo dibujado
+      }
+      ctx.lineCap = 'round';
+    };
+
+    const startDraw = (e) => {
+      drawing = true;
+      ctx.beginPath();
+      ctx.moveTo(e.offsetX, e.offsetY);
+      getStroke();
+    };
+    const draw = (e) => {
+      if (!drawing) return;
+      ctx.lineTo(e.offsetX, e.offsetY);
+      getStroke();
+      ctx.stroke();
+    };
+    const stopDraw = () => {
+      drawing = false;
+      ctx.closePath();
+      ctx.globalAlpha = 1;
+      ctx.globalCompositeOperation = 'source-over';
+    };
+
+    canvas.addEventListener('mousedown', startDraw);
+    canvas.addEventListener('mousemove', draw);
+    canvas.addEventListener('mouseup', stopDraw);
+    canvas.addEventListener('mouseleave', stopDraw);
+
+    return () => {
+      canvas.removeEventListener('mousedown', startDraw);
+      canvas.removeEventListener('mousemove', draw);
+      canvas.removeEventListener('mouseup', stopDraw);
+      canvas.removeEventListener('mouseleave', stopDraw);
+    };
+  }, [drawingMode, tool]);
   return (
     <div className="app-container">
       {/* Sidebar principal SOLO en móvil como drawer */}
@@ -204,16 +302,36 @@ const Message = () => {
             <div
               key={idx}
               className={`chat-bubble${msg.from === 'Yo' ? ' me' : ''}`}
+              onMouseEnter={() => setHoveredMsg(idx)}
+              onMouseLeave={() => setHoveredMsg(null)}
+              onTouchStart={isMobile ? handleTouchStart : undefined}
+              onTouchEnd={isMobile ? (e) => handleTouchEnd(msg, e) : undefined}
             >
-              {msg.from !== 'Yo' && (
-                <div className="chat-bubble-from">{msg.from}</div>
+              {msg.replyTo && (
+                <div className="reply-to">
+                  <span className="reply-from">{msg.replyTo.from}:</span>
+                  <span className="reply-text">{msg.replyTo.text}</span>
+                </div>
               )}
               <div className="chat-bubble-text">{msg.text}</div>
               <div className="chat-bubble-time">{msg.time}</div>
+              {msg.from !== 'Yo' && hoveredMsg === idx && !isMobile && (
+                <button
+                  className="reply-btn"
+                  onClick={() => setReplyTo(msg)}
+                  title="Responder"
+                >↩️</button>
+              )}
+              
               {/* Muestra la imagen si existe */}
               {msg.imagePreview && (
                 <div style={{ marginTop: 8 }}>
-                  <img src={msg.imagePreview} alt="preview" style={{ maxWidth: 150, borderRadius: 8 }} />
+                  <img
+                    src={msg.imagePreview}
+                    alt="preview"
+                    style={{ maxWidth: 150, borderRadius: 8, cursor: 'pointer' }}
+                    onClick={() => setFullscreenImage(msg.imagePreview)}
+                  />
                 </div>
               )}
               {/* Muestra el nombre del archivo si existe y no es imagen */}
@@ -227,68 +345,137 @@ const Message = () => {
           ))}
           <div ref={messagesEndRef} />
         </div>
+
+        {selectedFile && imagePreview && (
+          <div
+            style={{
+              position: 'relative',
+              display: 'flex',
+              flexDirection: 'column',
+              alignItems: 'center',
+              justifyContent: 'center',
+              margin: '0 auto 16px auto',
+              background: 'transparent',
+              borderRadius: 16,
+              boxShadow: '0 2px 16px #0002',
+              width: 380,
+              minHeight: 380,
+              maxWidth: '90vw',
+              maxHeight: '60vh',
+              padding: 24,
+              zIndex: 10,
+            }}
+          >
+            {/* Botones de herramientas */}
+            <div style={{ position: 'absolute', top: 8, left: 8, display: 'flex', gap: 12, zIndex: 3 }}>
+              <button
+                type="button"
+                title="Resaltador"
+                style={{
+                  background: tool === 'highlight' ? '#ffe066' : '#fff',
+                  border: '1px solid #ccc',
+                  borderRadius: '50%',
+                  padding: 8,
+                  cursor: 'pointer'
+                }}
+                onClick={() => { setDrawingMode(true); setTool('highlight'); }}
+              >🖍️</button>
+              <button
+                type="button"
+                title="Lápiz"
+                style={{
+                  background: tool === 'pen' ? '#b3e5fc' : '#fff',
+                  border: '1px solid #ccc',
+                  borderRadius: '50%',
+                  padding: 8,
+                  cursor: 'pointer'
+                }}
+                onClick={() => { setDrawingMode(true); setTool('pen'); }}
+              >✏️</button>
+              <button
+                type="button"
+                title="Borrador"
+                style={{
+                  background: tool === 'eraser' ? '#eee' : '#fff',
+                  border: '1px solid #ccc',
+                  borderRadius: '50%',
+                  padding: 8,
+                  cursor: 'pointer'
+                }}
+                onClick={() => { setDrawingMode(true); setTool('eraser'); }}
+              >🧽</button>
+            </div>
+            {/* Botón de eliminar */}
+            <button
+              type="button"
+              onClick={() => {
+                setSelectedFile(null);
+                setImagePreview(null);
+                if (fileInputRef.current) fileInputRef.current.value = '';
+              }}
+              style={{
+                position: 'absolute',
+                top: 16,
+                right: 16,
+                background: '#fff',
+                border: '1px solid #ccc',
+                borderRadius: '50%',
+                color: '#c00',
+                fontSize: 26,
+                cursor: 'pointer',
+                width: 38,
+                height: 38,
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center',
+                zIndex: 3
+              }}
+              aria-label="Eliminar archivo"
+              title="Eliminar archivo"
+            >
+              ✕
+            </button>
+            <div style={{ position: 'relative', width: 280, height: 280 }}>
+              <img
+                src={imagePreview}
+                alt="preview"
+                style={{
+                  width: 280,
+                  height: 280,
+                  objectFit: 'contain',
+                  borderRadius: 12,
+                  background: 'transparent',
+                  top: 0,
+                  left: 0,
+                  zIndex: 1,
+                }}
+              />
+              {drawingMode && (
+                <canvas
+                  id="draw-canvas"
+                  width={280}
+                  height={280}
+                  style={{
+                    position: 'absolute',
+                    top: 0,
+                    left: 0,
+                    borderRadius: 12,
+                    cursor: tool === 'eraser' ? 'cell' : 'crosshair',
+                    zIndex: 2,
+                    width: 280,
+                    height: 280,
+                    background: 'transparent'
+                  }}
+                />
+              )}
+            </div>
+          </div>
+        )}
         <form
           className="msg-input-form"
           onSubmit={handleSend}
         >
           {/* Previsualización antes de enviar, ahora arriba del input y con botón de eliminar */}
-          {selectedFile && (
-            <div className="file-preview" style={{ marginBottom: 12 }}>
-              <div
-                style={{
-                  display: 'flex',
-                  alignItems: 'center',
-                  gap: 8,
-                  background: '#f5f5f5',
-                  borderRadius: 8,
-                  padding: '8px 16px',
-                  boxShadow: '0 1px 4px #0001',
-                  maxWidth: 320,
-                  minWidth: 200
-                }}
-              >
-                {imagePreview ? (
-                  <img src={imagePreview} alt="preview" style={{ maxWidth: 120, borderRadius: 8 }} />
-                ) : (
-                  <>
-                    {getFileIcon(selectedFile)}
-                    <span style={{
-                      fontSize: 13,
-                      marginLeft: 4,
-                      wordBreak: 'break-all',
-                      textAlign: 'center',
-                      maxWidth: 180,
-                      whiteSpace: 'normal'
-                    }}>
-                      Archivo seleccionado:<br />
-                      {selectedFile.name}
-                    </span>
-                  </>
-                )}
-                <button
-                  type="button"
-                  onClick={() => {
-                    setSelectedFile(null);
-                    setImagePreview(null);
-                    if (fileInputRef.current) fileInputRef.current.value = '';
-                  }}
-                  style={{
-                    background: 'none',
-                    border: 'none',
-                    color: '#c00',
-                    fontSize: 18,
-                    cursor: 'pointer',
-                    marginLeft: 8,
-                    lineHeight: 1
-                  }}
-                  aria-label="Eliminar archivo"
-                  title="Eliminar archivo"
-                >
-                  ✕
-                </button>
-              </div>
-            </div>
-          )}
           <div className="msg-input-box">
             <button
               type="button"
@@ -311,6 +498,13 @@ const Message = () => {
                 <EmojiPicker onEmojiClick={handleEmojiSelect} />
               </div>
             )}
+            {replyTo && (
+              <div className="reply-preview">
+                <span className="reply-from">{replyTo.from}:</span>
+                <span className="reply-text">{replyTo.text}</span>
+                <button className="reply-cancel" onClick={() => setReplyTo(null)}>✕</button>
+              </div>
+            )}
             <textarea
               ref={textareaRef}
               value={input}
@@ -319,6 +513,14 @@ const Message = () => {
               className="msg-input"
               rows={1}
               style={{ resize: 'none', overflowY: 'auto' }}
+              onKeyDown={e => {
+                // Solo en desktop: Enter envía, Shift+Enter hace salto de línea
+                if (!isMobile && e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSend(e);
+                  setTimeout(() => textareaRef.current && textareaRef.current.focus(), 0);
+                }
+              }}
             />
             {/* Input file oculto */}
             <input
@@ -342,7 +544,29 @@ const Message = () => {
           </button>
         </form>
       </div>
+      {fullscreenImage && (
+        <div
+          className="fullscreen-image-modal"
+          onClick={() => setFullscreenImage(null)}
+        >
+          <img
+            src={fullscreenImage}
+            alt="Ampliada"
+            className="fullscreen-image"
+            onClick={e => e.stopPropagation()}
+          />
+          <button
+            className="fullscreen-image-close"
+            onClick={() => setFullscreenImage(null)}
+            aria-label="Cerrar"
+            title="Cerrar"
+          >
+            ✕
+          </button>
+        </div>
+      )}
     </div>
+
   );
 };
 

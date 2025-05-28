@@ -36,6 +36,7 @@ body {
   width: 100%;
   display: flex;
   justify-content: center;
+  margin-bottom: 12px;
 }
 .file-preview > div {
   display: flex;
@@ -49,10 +50,10 @@ body {
   min-width: 200px;
 }
 .msg-input-box {
-  position: relative;
-  flex: 1;
   display: flex;
-  align-items: center;
+  flex-direction: column; /* <-- Asegura que los hijos se apilen verticalmente */
+  position: relative;
+  gap: 0; /* Espacio entre reply-preview y textarea */
 }
 
 .msg-input {
@@ -95,7 +96,7 @@ body {
 .app-container {
   display: flex;
   height: 100vh;
-  background: #f5f6fa;
+  background: transparent !important;
   overflow: hidden;
 }
 
@@ -198,13 +199,15 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  background: #fff;
+  background: transparent !important;
   min-width: 0;
   height: 100vh;
 }
 
 .chat-header {
   height: 90px;
+  min-height: 56px;
+  max-height: 56px;
   background: #e5e5e5;
   border-bottom: 1px solid #ddd;
   display: flex;
@@ -222,7 +225,7 @@ body {
   display: flex;
   min-height: 0;
   flex-direction: column;
-  background: #D3D3D3;
+  background: transparent !important;
   gap: 10px;
   margin: 0;
 }
@@ -283,25 +286,25 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 56px;      /* asegúrate que el ancho y alto sean iguales */
-  height: 56px;
-  padding: 0 !important;
-  border-radius: 50% !important;
+  border-radius: 20px;
+  padding: 8px 24px;
   background: #183366;
   color: #fff;
   border: none;
-  font-size: 28px !important; /* tamaño del icono */
+  cursor: pointer;
+  font-size: 15px;
+  min-width: 80px; /* Ajusta según tu preferencia */
+  height: 40px;
+  transition: background 0.2s;
 }
 .msg-btn-icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 100%;
-  height: 100%;
-  margin-top:24px; /* Ajusta este valor según lo que necesites */
+  margin: 0 8px 0 0;
+  font-size: 20px;
+  display: none;
 }
-.msg-btn-text { display: inline; }
-
+.msg-btn-text {
+  display: inline;
+}
 .msg-input {
   flex: 1;
   border: none;
@@ -328,6 +331,91 @@ body {
   font-size: 15px;
 }
 
+/* Modal de imagen ampliada */
+.fullscreen-image-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0,0,0,0.85);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: fadeIn 0.2s;
+}
+
+.fullscreen-image {
+  max-width: 90vw;
+  max-height: 90vh;
+  border-radius: 12px;
+  box-shadow: 0 4px 32px #0008;
+  background: #fff;
+}
+
+.fullscreen-image-close {
+  position: fixed;
+  top: 32px;
+  right: 48px;
+  font-size: 2.5rem;
+  color: #fff;
+  background: none;
+  border: none;
+  cursor: pointer;
+  z-index: 10000;
+  padding: 0 12px;
+  line-height: 1;
+  transition: color 0.2s;
+}
+
+.fullscreen-image-close:hover {
+  color: #ff4444;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+.reply-preview {
+  background: #f1f1f1;
+  border-left: 4px solid #1976d2;
+  padding: 0;
+  margin-bottom: 12px;      /* Más separación con el textarea */
+  margin-top: 4px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-size: 15px;
+  min-height: 32px;
+  border-radius: 10px 10px 10px 4px;
+  box-shadow: 0 1px 4px #0001;
+  max-width: 90%;
+}
+.reply-cancel {
+  background: none;
+  border: none;
+  color: #c00;
+  font-size: 18px;
+  cursor: pointer;
+}
+.reply-btn {
+  position: absolute;
+  right: -32px;
+  top: 8px;
+  background: #fff;
+  border: 1px solid #ccc;
+  border-radius: 50%;
+  cursor: pointer;
+  font-size: 16px;
+  padding: 4px 6px;
+  z-index: 2;
+}
+.reply-to {
+  background: #e5e5e5;
+  border-left: 3px solid #1976d2;
+  padding: 4px 8px;
+  margin-bottom: 4px;
+  font-size: 13px;
+  color: #555;
+}
 /* Responsive: pantallas medianas */
 @media (max-width: 900px) {
   .sidebar {
@@ -405,8 +493,28 @@ body {
     flex-direction: column;
   }
 
-  .msg-btn-icon { display: inline; }
-  .msg-btn-text { display: none; }
+  .msg-btn {
+    width: 48px;
+    height: 48px;
+    padding: 0 !important;
+    border-radius: 50% !important;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 26px !important;
+    min-width: 0;
+  }
+  .msg-btn-icon {
+    display: inline;
+    margin: 0;
+    font-size: 26px;
+    text-align: center;
+    line-height: 1;
+    margin-top: 3px;
+  }
+  .msg-btn-text {
+    display: none;
+  }
 
   .chat-panel {
     min-width: 0;
@@ -425,7 +533,7 @@ body {
     overflow-x: hidden;
     padding: 16px;
     min-height: 0;
-    background: #D3D3D3;
+    background: transparent !important;
   }
 
   .msg-input-form {
